@@ -9,6 +9,15 @@ vim.opt.smartindent = true -- Smart autoindenting on new lines
 vim.opt.autoindent = true
 vim.opt.smarttab = true
 
+vim.opt.clipboard = "unnamedplus" -- use system keyboard for yank
+
+vim.opt.nu = true -- set line numbers -- set line numbers
+vim.opt.relativenumber = true -- use relative line numbers
+
+vim.opt.wrap = false
+
+vim.opt.incsearch = true -- incremental search
+
 return {
 	{
 		"nvim-treesitter/nvim-treesitter",
@@ -86,6 +95,12 @@ return {
 		"folke/which-key.nvim",
 		config = function()
 			require("which-key").setup({})
+		end,
+	},
+	{
+		"numToStr/Comment.nvim",
+		config = function()
+			require("Comment").setup()
 		end,
 	},
 }
