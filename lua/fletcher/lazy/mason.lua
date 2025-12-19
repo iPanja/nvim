@@ -6,7 +6,14 @@ return {
 		dependencies = { "neovim/nvim-lspconfig" },
 		config = function()
 			require("mason-lspconfig").setup({
-				ensure_installed = { "lua_ls", "gopls" }, -- Add more servers here
+				ensure_installed = {
+					"lua_ls",
+					"gopls",
+					"pyright",
+					"ts_ls",
+					"eslint",
+					"clangd",
+				},
 				automatic_installation = true,
 				auto_update = true,
 				run_on_start = true,
@@ -22,11 +29,17 @@ return {
 				ensure_installed = {
 					"stylua",
 					"black",
-					-- "prettier",
-					-- add other tools here
+					"isort",
+					"ruff",
+					"prettier",
+					"eslint_d",
+					"delve",
+					"debugpy",
+					"js-debug-adapter",
+					"codelldb",
 				},
-				auto_update = true, -- optional
-				run_on_start = true, -- install missing on startup
+				auto_update = true,
+				run_on_start = true,
 			})
 		end,
 	},

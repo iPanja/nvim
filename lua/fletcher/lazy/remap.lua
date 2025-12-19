@@ -10,6 +10,12 @@ keymap("n", "<C-j>", "<C-w>j", { desc = "Move to below window" })
 keymap("n", "<C-k>", "<C-w>k", { desc = "Move to above window" })
 keymap("n", "<C-l>", "<C-w>l", { desc = "Move to right window" })
 
+-- Bracket-based window navigation
+keymap("n", "]w", "<C-w>w", { desc = "Next window" })
+keymap("n", "[w", "<C-w>H", { desc = "Previous window" })
+keymap("n", "[W", "999<C-w>h", { desc = "Leftmost window" })
+keymap("n", "]W", "999<C-w>l", { desc = "Rightmost window" })
+
 -- WINDOW RESIZING
 keymap("n", "<C-Up>", ":resize -2<CR>", { desc = "Resize window up" })
 keymap("n", "<C-Down>", ":resize +2<CR>", { desc = "Resize window down" })
@@ -32,10 +38,20 @@ keymap("n", "<leader>tn", ":tabnext<CR>", { desc = "Next tab" })
 -- BUFFER NAVIGATION
 keymap("n", "<S-l>", ":bnext<CR>", { desc = "Next buffer" })
 keymap("n", "<S-h>", ":bprevious<CR>", { desc = "Previous buffer" })
-keymap("n", "<leader>bd", ":bdelete<CR>", { desc = "Close buffer" })
+keymap("n", "<leader>bd", function()
+	-- If there are multiple buffers, switch to previous before deleting
+	local buf_count = #vim.fn.getbufinfo({ buflisted = 1 })
+	if buf_count > 1 then
+		vim.cmd("bprevious")
+	end
+	vim.cmd("bdelete #")
+end, { desc = "Close buffer" })
 
--- FILE EXPLORER (NetRW or user-defined)
-keymap("n", "<leader>e", "<cmd>Vex<CR>", { desc = "File explorer (vertical)" })
+keymap("n", "<leader>dD", ":bdelete!<CR>", { desc = "Force close buffer" })
+keymap("n", "<leader>ba", ":bufdo bd<CR>", { desc = "Close all buffers" })
+keymap("n", "<leader>bo", ":%bdelete|edit #|bdelete #<CR>", { desc = "Close all but current buffer" })
+keymap("n", "<leader>br", ":e<CR>", { desc = "Reload buffer from disk" })
+keymap("n", "<leader>bR", ":e!<CR>", { desc = "Force reload (discard changes)" })
 
 -- TOGGLE COMMENTS
 ---- NORMAL mode: toggle comment on current line
@@ -49,5 +65,38 @@ vim.keymap.set("v", "<leader>/", function()
 	vim.api.nvim_feedkeys(esc, "nx", false)
 	require("Comment.api").toggle.linewise(vim.fn.visualmode())
 end, { desc = "Toggle comment (selection)" })
+
+-- INDENTATION
+---- Indent
+keymap("n", "<D-]>", ">>", { desc = "Indent line" })
+keymap("n", "<D-]>", ">gv", { desc = "Indent selection" })
+---- Unindent
+keymap("n", "<D-]>", "<<", { desc = "Unindent line" })
+keymap("n", "<D-]>", "<gv", { desc = "Unindent selection" })
+
+-- DIAGNOSTIC NAVIGATION (LSP errors/warnings)
+keymap("n", "]d", vim.diagnostic.goto_next, { desc = "Next diagnostic" })
+keymap("n", "[d", vim.diagnostic.goto_prev, { desc = "Previous diagnostic" })
+keymap("n", "]e", function()
+	vim.diagnostic.goto_next({ severity = vim.diagnostic.severity.ERROR })
+end, { desc = "Next error" })
+keymap("n", "[e", function()
+	vim.diagnostic.goto_prev({ severity = vim.diagnostic.severity.ERROR })
+end, { desc = "Previous error" })
+
+keymap("n", "gl", vim.diagnostic.open_float, { desc = "Open line diagnostics" })
+keymap("n", "<leader>dd", vim.diagnostic.setloclist, { desc = "Show line diagnostics" })
+
+-- QUICKFIX LIST NAVIGATION
+keymap("n", "]q", ":cnext<CR>", { desc = "Next quickfix item" })
+keymap("n", "[q", ":cprev<CR>", { desc = "Previous quickfix item" })
+keymap("n", "]Q", ":clast<CR>", { desc = "Open quickfix list" })
+keymap("n", "[Q]", ":cfirst<CR>", { desc = "Close quickfix list" })
+
+-- LOCATION LIST NAVIGATION
+keymap("n", "]l", ":lnext<CR>", { desc = "Next location list item" })
+keymap("n", "[l", ":lprev<CR>", { desc = "Previous location list item" })
+keymap("n", "]L", ":llast<CR>", { desc = "Last location list item" })
+keymap("n", "[L]", ":lfirst<CR>", { desc = "First location list item" })
 
 return {}

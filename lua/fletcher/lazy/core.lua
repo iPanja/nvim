@@ -1,3 +1,12 @@
+-- Auto read when file is changed outside of vim
+vim.opt.autoread = true
+
+-- Trigger autoread when changing buffers or coming  back to vim
+vim.api.nvim_create_autocmd({ "BufEnter", "FocusGained", "CursorHold", "CursorHoldI"}, {
+	pattern = "*",
+	command = "checktime"
+})
+
 vim.g.mapleader = " "
 vim.g.maplocalleader = " "
 
@@ -21,21 +30,31 @@ vim.opt.incsearch = true -- incremental search
 return {
 	{
 		"nvim-treesitter/nvim-treesitter",
+		branch = "main",
+		event = { "BufReadPost", "BufNewFile" },
 		build = ":TSUpdate",
 		config = function()
-			local configs = require("nvim-treesitter.configs")
-			configs.setup({
+			require("nvim-treesitter.configs").setup({
 				ensure_installed = {
 					"lua",
 					"vim",
 					"vimdoc",
 					"javascript",
-					"html",
-					"python",
 					"typescript",
+					"tsx",
+					"html",
+					"css",
+					"json",
+					"yaml",
+					"python",
 					"go",
+					"c",
+					"cpp",
+					"markdown",
+					"markdown_inline",
 				},
 				sync_install = false,
+				auto_install = true,
 				highlight = { enable = true },
 				indent = { enable = true },
 			})
@@ -82,13 +101,13 @@ return {
 			local keymap = vim.keymap.set
 			local opts = { noremap = true, silent = true }
 
-			keymap("n", "<leader>ff", builtin.find_files, opts) -- Find files
-			keymap("n", "<leader>fg", builtin.live_grep, opts) -- Grep in project
-			keymap("n", "<leader>fb", builtin.buffers, opts) -- Open buffers
-			keymap("n", "<leader>fh", builtin.help_tags, opts) -- Help tags
-			keymap("n", "<leader>fc", builtin.commands, opts) -- Available commands
-			keymap("n", "<leader>fr", builtin.oldfiles, opts) -- Recent files
-			keymap("n", "<leader>fd", builtin.diagnostics, opts) -- LSP diagnostics
+			keymap("n", "<leader>ff", builtin.find_files, { noremap = true, silent = true, desc = "Find files" })
+			keymap("n", "<leader>fg", builtin.live_grep, { noremap = true, silent = true, desc = "Live grep" })
+			keymap("n", "<leader>fb", builtin.buffers, { noremap = true, silent = true, desc = "Open buffers" })
+			keymap("n", "<leader>fh", builtin.help_tags, { noremap = true, silent = true, desc = "Help tags" })
+			keymap("n", "<leader>fc", builtin.commands, { noremap = true, silent = true, desc = "Available commands" })
+			keymap("n", "<leader>fr", builtin.oldfiles, { noremap = true, silent = true, desc = "Recent files" })
+			keymap("n", "<leader>fd", builtin.diagnostics, { noremap = true, silent = true, desc = "LSP diagnostics" })
 		end,
 	},
 	{

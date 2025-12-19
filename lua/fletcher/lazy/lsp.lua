@@ -1,5 +1,3 @@
-require("fletcher.lazy.lang.go")
-
 -- Reserve a space in the gutter
 -- This will avoid an annoying layout shift in the screen
 vim.opt.signcolumn = "yes"
@@ -19,17 +17,25 @@ vim.api.nvim_create_autocmd("LspAttach", {
 	desc = "LSP actions",
 	callback = function(event)
 		local opts = { buffer = event.buf }
+		-- Attach navic if available
+		local client = vim.lsp.get_client_by_id(event.data.client_id)
+		if client and client.server_capabilities.documentSymbolProvider then
+			local navic_ok, navic = pcall(require, "nvim-navic")
+			if navic_ok then
+				navic.attach(client, event.buf)
+			end
+		end
 
-		vim.keymap.set("n", "K", "<cmd>lua vim.lsp.buf.hover()<cr>", opts)
-		vim.keymap.set("n", "gd", "<cmd>lua vim.lsp.buf.definition()<cr>", opts)
-		vim.keymap.set("n", "gD", "<cmd>lua vim.lsp.buf.declaration()<cr>", opts)
-		vim.keymap.set("n", "gi", "<cmd>lua vim.lsp.buf.implementation()<cr>", opts)
-		vim.keymap.set("n", "go", "<cmd>lua vim.lsp.buf.type_definition()<cr>", opts)
-		vim.keymap.set("n", "gr", "<cmd>lua vim.lsp.buf.references()<cr>", opts)
-		vim.keymap.set("n", "gs", "<cmd>lua vim.lsp.buf.signature_help()<cr>", opts)
-		vim.keymap.set("n", "<F2>", "<cmd>lua vim.lsp.buf.rename()<cr>", opts)
-		vim.keymap.set({ "n", "x" }, "<F3>", "<cmd>lua vim.lsp.buf.format({async = true})<cr>", opts)
-		vim.keymap.set("n", "<F4>", "<cmd>lua vim.lsp.buf.code_action()<cr>", opts)
+		vim.keymap.set("n", "K", "<cmd>lua vim.lsp.buf.hover()<cr>",{ buffer = event.buf, desc = "Hover documentation"})
+		vim.keymap.set("n", "gd", "<cmd>lua vim.lsp.buf.definition()<cr>", { buffer = event.key, desc = "Go to definition"})
+		vim.keymap.set("n", "gD", "<cmd>lua vim.lsp.buf.declaration()<cr>", { buffer = event.key, desc = "Go to declaration"})
+		vim.keymap.set("n", "gi", "<cmd>lua vim.lsp.buf.implementation()<cr>", { buffer = event.key, desc = "Go to implementation"})
+		vim.keymap.set("n", "go", "<cmd>lua vim.lsp.buf.type_definition()<cr>", { buffer = event.key, desc = "Go to type definition"})
+		vim.keymap.set("n", "gr", "<cmd>lua vim.lsp.buf.references()<cr>", { buffer = event.key, desc = "Find references"})
+		vim.keymap.set("n", "gs", "<cmd>lua vim.lsp.buf.signature_help()<cr>", { buffer = event.key, desc = "Signature help"})
+		vim.keymap.set("n", "<F2>", "<cmd>lua vim.lsp.buf.rename()<cr>", { buffer = event.key, desc = "Rename symbol"})
+		vim.keymap.set({ "n", "x" }, "<F3>", "<cmd>lua vim.lsp.buf.format({async = true})<cr>", { buffer = event.key, desc = "Format buffer"})
+		vim.keymap.set("n", "<F4>", "<cmd>lua vim.lsp.buf.code_action()<cr>", { buffer = event.key, desc = "Code action"})
 	end,
 })
 
@@ -54,24 +60,109 @@ return {
 				require("cmp_nvim_lsp").default_capabilities()
 			)
 
-			-- Set up LSP capabilities for nvim-cmp
-			local capabilities = cmp_nvim_lsp.default_capabilities()
-
-			-- Example: Configure Lua LSP
-			lspconfig.lua_ls.setup({
-				capabilities = capabilities,
-				settings = {
-					Lua = {
-						diagnostics = {
-							globals = { "vim" },
+			require("mason-lspconfig").setup_handlers({
+				function(server_name)
+					lspconfig[server_name].setup({
+						capabilities = cmp_nvim_lsp.default_capabilities(),
+					})
+				end,
+				-- Custom handler for lua_ls
+				["lua_ls"] = function()
+					lspconfig.lua_ls.setup({
+						capabilities = cmp_nvim_lsp.default_capabilities(),
+						settings = {
+							Lua = {
+								diagnostics = {
+									globals = { "vim" },
+								},
+							},
 						},
-					},
-				},
+					})
+				end,
+				-- Custom handler for gopls
+				["gopls"] = function()
+					lspconfig.gopls.setup({
+						capabilities = cmp_nvim_lsp.default_capabilities(),
+						settings = {
+							gopls = {
+								analyses = {
+									shadow = true,
+									unusedparams = true,
+								},
+								staticcheck = true,
+							},
+						},
+					})
+				end,
+				-- Custom handler for pyright
+				["pyright"] = function()
+					lspconfig.pyright.setup({
+						capabilities = cmp_nvim_lsp.default_capabilities(),
+						settings = {
+							pyright = {
+								analysis = {
+									typeCheckingMode = "basic",
+									autoSearchPaths = true,
+									useLibraryCodeForTypes = true,
+									diagnosticMode = "workspace",
+								},
+							},
+						},
+					})
+				end,
+				-- Custom handler for ts_ls (formerly tsserver)
+				["ts_ls"] = function()
+					lspconfig.ts_ls.setup({
+						capabilities = cmp_nvim_lsp.default_capabilities(),
+						settings = {
+							typescript = {
+								inlayHints = {
+									includeInlayParameterNameHints = "all",
+									includeInlayParameterNameHintsWhenArgumentMatchName = false,
+									includeInlayFunctionParameterTypeHints = true,
+									includeInlayVariableTypeHints = true,
+									includeInlayPropertyDeclarationTypeHints = true,
+									includeInlayFunctionLikeReturnTypeHints = true,
+									includeInlayEnumMemberValueHints = true,
+								},
+							},
+							javascript = {
+								inlayHints = {
+									includeInlayParameterNameHints = "all",
+									includeInlayParameterNameHintsWhenArgumentMatchName = false,
+									includeInlayFunctionParameterTypeHints = true,
+									includeInlayVariableTypeHints = true,
+									includeInlayPropertyDeclarationTypeHints = true,
+									includeInlayFunctionLikeReturnTypeHints = true,
+									includeInlayEnumMemberValueHints = true,
+								},
+							},
+						},
+					})
+				end,
+				-- Custom handler for clangd
+				["clangd"] = function()
+					lspconfig.clangd.setup({
+						capabilities = cmp_nvim_lsp.default_capabilities(),
+						cmd = {
+							"clangd",
+							"--background-index",
+							"--clang-tidy",
+							"--header-insertion=iwyu",
+							"--completion-style=detailed",
+							"--function-arg-placeholders",
+							"--fallback-style=llvm",
+							-- "--log=verbose",
+						},
+						init_options = {
+							usePlaceholders = true,
+							completeUnimported = true,
+							clangdFileStatus = true,
+						},
+						root_dir = lspconfig.util.root_pattern("compile_commands.json", "compile_flags.txt", ".git"),
+					})
+				end,
 			})
-
-			-- You can configure more servers here:
-			-- lspconfig.pyright.setup({ capabilities = capabilities })
-			-- lspconfig.tsserver.setup({ capabilities = capabilities })
 		end,
 	},
 
@@ -81,7 +172,6 @@ return {
 		event = "InsertEnter",
 		dependencies = {
 			"hrsh7th/cmp-nvim-lsp",
-			"L3MON4D3/LuaSnip", -- optional, for snippet support
 		},
 		config = function()
 			local cmp = require("cmp")
@@ -107,11 +197,16 @@ return {
 				formatters_by_ft = {
 					lua = { "stylua" },
 					go = { "gofmt" },
-					python = { "black" },
-					-- javascript = { "prettier" },
-					-- add other formatters per filetype
+					python = { "black", "isort" },
+					javascript = { "prettier" },
+					typescript = { "prettier" },
+					javascriptreact = { "prettier" },
+					typescriptreact = { "prettier" },
+					json = { "prettier" },
+					html = { "prettier" },
+					css = { "prettier" },
+					markdown = { "prettier" },
 				},
-				-- optionally enable logging
 				log_level = vim.log.levels.INFO,
 			})
 		end,
