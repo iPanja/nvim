@@ -12,7 +12,7 @@ keymap("n", "<C-l>", "<C-w>l", { desc = "Move to right window" })
 
 -- Bracket-based window navigation
 keymap("n", "]w", "<C-w>w", { desc = "Next window" })
-keymap("n", "[w", "<C-w>H", { desc = "Previous window" })
+keymap("n", "[w", "<C-w>W", { desc = "Previous window" })
 keymap("n", "[W", "999<C-w>h", { desc = "Leftmost window" })
 keymap("n", "]W", "999<C-w>l", { desc = "Rightmost window" })
 
@@ -26,14 +26,21 @@ keymap("n", "<C-Right>", ":vertical resize +2<CR>", { desc = "Resize window righ
 keymap("n", "<leader>sv", ":vsplit<CR>", { desc = "Vertical split" })
 keymap("n", "<leader>sh", ":split<CR>", { desc = "Horizontal split" })
 keymap("n", "<leader>se", "<C-w>=", { desc = "Make splits equal size" })
-keymap("n", "<leader>sx", ":close<CR>", { desc = "Close current split" })
+keymap("n", "<leader>sx", ":close<CR>", { desc = "Close current split/pane" })
+keymap("n", "<leader>so", ":only<CR>", { desc = "Close all other splits" })
 
 -- TABS (if you use tabs)
-keymap("n", "<leader>tn", ":tabnew<CR>", { desc = "New tab" })
+keymap("n", "<leader>to", ":tabnew<CR>", { desc = "New tab" })
 keymap("n", "<leader>tc", ":tabclose<CR>", { desc = "Close tab" })
-keymap("n", "<leader>to", ":tabonly<CR>", { desc = "Close all other tabs" })
+keymap("n", "<leader>tO", ":tabonly<CR>", { desc = "Close all other tabs" })
 keymap("n", "<leader>tp", ":tabprevious<CR>", { desc = "Previous tab" })
 keymap("n", "<leader>tn", ":tabnext<CR>", { desc = "Next tab" })
+
+-- BRACKET-BASED TAB NAVIGATION
+keymap("n", "]t", ":tabnext<CR>", { desc = "Next tab" })
+keymap("n", "[t", ":tabprevious<CR>", { desc = "Previous tab" })
+keymap("n", "[T", "999<C-w>h", { desc = "Leftmost tab" })
+keymap("n", "]T", "999<C-w>l", { desc = "Rightmost tab" })
 
 -- BUFFER NAVIGATION
 keymap("n", "<S-l>", ":bnext<CR>", { desc = "Next buffer" })
@@ -47,11 +54,17 @@ keymap("n", "<leader>bd", function()
 	vim.cmd("bdelete #")
 end, { desc = "Close buffer" })
 
-keymap("n", "<leader>dD", ":bdelete!<CR>", { desc = "Force close buffer" })
-keymap("n", "<leader>ba", ":bufdo bd<CR>", { desc = "Close all buffers" })
+keymap("n", "<leader>bD", ":bdelete!<CR>", { desc = "Force close buffer" })
+keymap("n", "<leader>ba", ":%bdelete<CR>", { desc = "Close all buffers" })
 keymap("n", "<leader>bo", ":%bdelete|edit #|bdelete #<CR>", { desc = "Close all but current buffer" })
 keymap("n", "<leader>br", ":e<CR>", { desc = "Reload buffer from disk" })
 keymap("n", "<leader>bR", ":e!<CR>", { desc = "Force reload (discard changes)" })
+
+-- BRACKET-BASED BUFFER NAVIGATION
+keymap("n", "]b", ":bnext<CR>", { desc = "Next buffer" })
+keymap("n", "[b", ":bprevious<CR>", { desc = "Previous buffer" })
+keymap("n", "[B", ":blast<CR>", { desc = "Last buffer" })
+keymap("n", "]B", ":bfirst<CR>", { desc = "First buffer" })
 
 -- TOGGLE COMMENTS
 ---- NORMAL mode: toggle comment on current line
@@ -69,10 +82,10 @@ end, { desc = "Toggle comment (selection)" })
 -- INDENTATION
 ---- Indent
 keymap("n", "<D-]>", ">>", { desc = "Indent line" })
-keymap("n", "<D-]>", ">gv", { desc = "Indent selection" })
+keymap("v", "<D-]>", ">gv", { desc = "Indent selection" })
 ---- Unindent
-keymap("n", "<D-]>", "<<", { desc = "Unindent line" })
-keymap("n", "<D-]>", "<gv", { desc = "Unindent selection" })
+keymap("n", "<D-[>", "<<", { desc = "Un-indent line" })
+keymap("v", "<D-[>", "<gv", { desc = "Un-indent selection" })
 
 -- DIAGNOSTIC NAVIGATION (LSP errors/warnings)
 keymap("n", "]d", vim.diagnostic.goto_next, { desc = "Next diagnostic" })
@@ -84,19 +97,19 @@ keymap("n", "[e", function()
 	vim.diagnostic.goto_prev({ severity = vim.diagnostic.severity.ERROR })
 end, { desc = "Previous error" })
 
-keymap("n", "gl", vim.diagnostic.open_float, { desc = "Open line diagnostics" })
-keymap("n", "<leader>dd", vim.diagnostic.setloclist, { desc = "Show line diagnostics" })
+keymap("n", "gl", vim.diagnostic.open_float, { desc = "Show line diagnostics" })
+keymap("n", "<leader>dd", vim.diagnostic.open_float, { desc = "Show line diagnostics" })
 
 -- QUICKFIX LIST NAVIGATION
 keymap("n", "]q", ":cnext<CR>", { desc = "Next quickfix item" })
 keymap("n", "[q", ":cprev<CR>", { desc = "Previous quickfix item" })
-keymap("n", "]Q", ":clast<CR>", { desc = "Open quickfix list" })
-keymap("n", "[Q]", ":cfirst<CR>", { desc = "Close quickfix list" })
+keymap("n", "]Q", ":clast<CR>", { desc = "Last quickfix list" })
+keymap("n", "[Q", ":cfirst<CR>", { desc = "First quickfix list" })
 
 -- LOCATION LIST NAVIGATION
 keymap("n", "]l", ":lnext<CR>", { desc = "Next location list item" })
 keymap("n", "[l", ":lprev<CR>", { desc = "Previous location list item" })
 keymap("n", "]L", ":llast<CR>", { desc = "Last location list item" })
-keymap("n", "[L]", ":lfirst<CR>", { desc = "First location list item" })
+keymap("n", "[L", ":lfirst<CR>", { desc = "First location list item" })
 
 return {}

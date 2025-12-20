@@ -8,8 +8,8 @@ return {
             "nvim-neotest/nvim-nio",
         },
         config = function()
-            local dap = require("dap");
-            local dapui = require("dapui");
+            local dap = require("dap")
+            local dapui = require("dapui")
             local keymap = vim.keymap.set
             -- Setup DAP UI
             dapui.setup({
@@ -49,8 +49,8 @@ return {
                     mappings = {
                         close = { "q", "<Esc>" },
                     },
-                }
-            });
+                },
+            })
 
             -- Setup DAP Virtual Text
             require("nvim-dap-virtual-text").setup({
@@ -67,7 +67,7 @@ return {
                 all_frames = false,
                 virt_lines = false,
                 virt_text_win_col = nil,
-            });
+            })
 
             -- Auto open/close DAP UI
             dap.listeners.after.event_initialized["dapui_config"] = function()
@@ -115,7 +115,7 @@ return {
                     port = "${port}",
                     args = {},
                     build_flags = "",
-                }
+                },
             })
         end,
     },
@@ -173,7 +173,7 @@ return {
                         request = "attach",
                         name = "Attach",
                         processId = require("dap.utils").pick_process,
-                        cmd = "${workspaceFolder}",
+                        cwd = "${workspaceFolder}",
                     },
                     {
                         type = "pwa-chrome",
@@ -181,7 +181,7 @@ return {
                         name = "Launch Chrome",
                         url = "http://localhost:3000",
                         webRoot = "${workspaceFolder}",
-                    }
+                    },
                 }
             end
         end,
@@ -231,11 +231,11 @@ return {
                     -- end,
                     pid = require("dap.utils").pick_process,
                     args = {},
-                }
+                },
             }
 
             -- C uses the same configurations as C++
             dap.configurations.c = dap.configurations.cpp
         end,
-    },
+    }
 }

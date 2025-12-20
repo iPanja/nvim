@@ -26,16 +26,16 @@ vim.api.nvim_create_autocmd("LspAttach", {
 			end
 		end
 
-		vim.keymap.set("n", "K", "<cmd>lua vim.lsp.buf.hover()<cr>",{ buffer = event.buf, desc = "Hover documentation"})
-		vim.keymap.set("n", "gd", "<cmd>lua vim.lsp.buf.definition()<cr>", { buffer = event.key, desc = "Go to definition"})
-		vim.keymap.set("n", "gD", "<cmd>lua vim.lsp.buf.declaration()<cr>", { buffer = event.key, desc = "Go to declaration"})
-		vim.keymap.set("n", "gi", "<cmd>lua vim.lsp.buf.implementation()<cr>", { buffer = event.key, desc = "Go to implementation"})
-		vim.keymap.set("n", "go", "<cmd>lua vim.lsp.buf.type_definition()<cr>", { buffer = event.key, desc = "Go to type definition"})
-		vim.keymap.set("n", "gr", "<cmd>lua vim.lsp.buf.references()<cr>", { buffer = event.key, desc = "Find references"})
-		vim.keymap.set("n", "gs", "<cmd>lua vim.lsp.buf.signature_help()<cr>", { buffer = event.key, desc = "Signature help"})
-		vim.keymap.set("n", "<F2>", "<cmd>lua vim.lsp.buf.rename()<cr>", { buffer = event.key, desc = "Rename symbol"})
+		vim.keymap.set("n", "K", "<cmd>lua vim.lsp.buf.hover()<cr>", { buffer = event.buf, desc = "Hover documentation"})
+		vim.keymap.set("n", "gd", "<cmd>lua vim.lsp.buf.definition()<cr>", { buffer = event.buf, desc = "Go to definition"})
+		vim.keymap.set("n", "gD", "<cmd>lua vim.lsp.buf.declaration()<cr>", { buffer = event.buf, desc = "Go to declaration"})
+		vim.keymap.set("n", "gi", "<cmd>lua vim.lsp.buf.implementation()<cr>", { buffer = event.buf, desc = "Go to implementation"})
+		vim.keymap.set("n", "go", "<cmd>lua vim.lsp.buf.type_definition()<cr>", { buffer = event.buf, desc = "Go to type definition"})
+		vim.keymap.set("n", "gr", "<cmd>lua vim.lsp.buf.references()<cr>", { buffer = event.buf, desc = "Find references"})
+		vim.keymap.set("n", "gs", "<cmd>lua vim.lsp.buf.signature_help()<cr>", { buffer = event.buf, desc = "Signature help"})
+		vim.keymap.set("n", "<F2>", "<cmd>lua vim.lsp.buf.rename()<cr>", { buffer = event.buf, desc = "Rename symbol"})
 		vim.keymap.set({ "n", "x" }, "<F3>", "<cmd>lua vim.lsp.buf.format({async = true})<cr>", { buffer = event.key, desc = "Format buffer"})
-		vim.keymap.set("n", "<F4>", "<cmd>lua vim.lsp.buf.code_action()<cr>", { buffer = event.key, desc = "Code action"})
+		vim.keymap.set("n", "<F4>", "<cmd>lua vim.lsp.buf.code_action()<cr>", { buffer = event.buf, desc = "Code action"})
 	end,
 })
 
@@ -60,6 +60,7 @@ return {
 				require("cmp_nvim_lsp").default_capabilities()
 			)
 
+			-- Set up mason-lspconfig to automatically install and configure language servers
 			require("mason-lspconfig").setup_handlers({
 				function(server_name)
 					lspconfig[server_name].setup({
@@ -99,7 +100,7 @@ return {
 					lspconfig.pyright.setup({
 						capabilities = cmp_nvim_lsp.default_capabilities(),
 						settings = {
-							pyright = {
+							python = {
 								analysis = {
 									typeCheckingMode = "basic",
 									autoSearchPaths = true,
@@ -118,7 +119,7 @@ return {
 							typescript = {
 								inlayHints = {
 									includeInlayParameterNameHints = "all",
-									includeInlayParameterNameHintsWhenArgumentMatchName = false,
+									includeInlayParameterNameHintsWhenArgumentMatchesName = false,
 									includeInlayFunctionParameterTypeHints = true,
 									includeInlayVariableTypeHints = true,
 									includeInlayPropertyDeclarationTypeHints = true,
@@ -129,7 +130,7 @@ return {
 							javascript = {
 								inlayHints = {
 									includeInlayParameterNameHints = "all",
-									includeInlayParameterNameHintsWhenArgumentMatchName = false,
+									includeInlayParameterNameHintsWhenArgumentMatchesName = false,
 									includeInlayFunctionParameterTypeHints = true,
 									includeInlayVariableTypeHints = true,
 									includeInlayPropertyDeclarationTypeHints = true,
@@ -152,7 +153,6 @@ return {
 							"--completion-style=detailed",
 							"--function-arg-placeholders",
 							"--fallback-style=llvm",
-							-- "--log=verbose",
 						},
 						init_options = {
 							usePlaceholders = true,

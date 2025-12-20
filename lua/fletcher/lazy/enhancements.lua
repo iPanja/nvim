@@ -14,14 +14,14 @@ return {
                 open_vsplit = { "<c-v>" },
                 open_tab = { "<c-t>" },
                 jump_close = { "o" },
-                toggle_mode = { "m" },
-                toggle_preview = { "P" },
+                toggle_mode = "m",
+                toggle_preview = "P",
                 help = { "?" },
                 hover = "K",
                 preview = "p",
                 close_folds = { "zM", "zm" },
                 open_folds = { "zR", "zr" },
-                toggle_folds = { "zA", "za" },
+                toggle_fold = { "zA", "za" },
                 previous = "k",
                 next = "j",
             },
@@ -49,7 +49,7 @@ return {
             },
             {
                 "<leader>xL",
-                "<cmd>Troube loclist toggle<cr>",
+                "<cmd>Trouble loclist toggle<cr>",
                 desc = "Trouble: Location list",
             },
             {
@@ -100,20 +100,13 @@ return {
                     max_height = 0.9,
                     min_height = { 10, 0.2 },
                 },
-                -- fzf = {
-                --     window = { border = "rounded" },
-                --     hl = { border = "DressingFloatBorder" },
-                -- },
-                -- Telescope = { border = "rounded" },
-                -- builtin = { border = "rounded" },
-                -- fzy_native = { border = "rounded" },
             },
         },
     },
 
     -- Nvim-spectre - Search and replace panel
     {
-        "windwp/nvim-spectre",
+        "nvim-pack/nvim-spectre",
         dependencies = { "nvim-lua/plenary.nvim" },
         keys = {
             {
@@ -150,9 +143,9 @@ return {
                 color_devicons = true,
                 open_cmd = "vnew",
                 live_update = false,
-                line_sep_start = "｢---------------",
-                result_padding = "|  ",
-                line_sep = "⌞----------------",
+                line_sep_start = "┌---------------------",
+                result_padding = "¦  ",
+                line_sep = "└---------------------",
                 highlight = {
                     ui = "String",
                     search = "DiffChange",
@@ -166,7 +159,7 @@ return {
                     },
                     ["enter_file"] = {
                         map = "<cr>",
-                        cmd = "<cmd>lua require('spectre.actions').enter_file()<CR>",
+                        cmd = "<cmd>lua require('spectre.actions').select_entry()<CR>", --enter_file()
                         desc = "goto current file",
                     },
                     ["send_to_qf"] = {
@@ -181,11 +174,11 @@ return {
                     },
                     ["show_option_menu"] = {
                         map = "<leader>o",
-                        cmd = "<cmd>lua require('spectre').show_option()<CR>",
-                        desc = "show option",
+                        cmd = "<cmd>lua require('spectre').show_options()<CR>",
+                        desc = "show options",
                     },
                     ["run_current_replace"] = {
-                        map = "<leader>rr",
+                        map = "<leader>rc",
                         cmd = "<cmd>lua require('spectre.actions').run_current_replace()<CR>",
                         desc = "replace current line",
                     },
@@ -200,7 +193,7 @@ return {
                         desc = "change result view mode",
                     },
                     ["change_replace_sed"] = {
-                        map = "<leader>s",
+                        map = "trs",
                         cmd = "<cmd>lua require('spectre').change_engine_replace('sed')<CR>",
                         desc = "use sed to replace",
                     },
@@ -216,13 +209,13 @@ return {
                     },
                     ["toggle_ignore_case"] = {
                         map = "ti",
-                        cmd = "<cmd>lua require('spectre').change_options('ignore_case')<CR>",
+                        cmd = "<cmd>lua require('spectre').change_options('ignore-case')<CR>",
                         desc = "toggle ignore case",
                     },
                     ["toggle_ignore_hidden"] = {
                         map = "th",
                         cmd = "<cmd>lua require('spectre').change_options('hidden')<CR>",
-                        desc = "toggle ignore hidden",
+                        desc = "toggle search hidden",
                     },
                     ["resume_last_search"] = {
                         map = "<leader>l",

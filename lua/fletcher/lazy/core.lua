@@ -31,10 +31,11 @@ return {
 	{
 		"nvim-treesitter/nvim-treesitter",
 		branch = "main",
-		event = { "BufReadPost", "BufNewFile" },
+		-- event = { "BufReadPost", "BufNewFile" },
 		build = ":TSUpdate",
 		config = function()
-			require("nvim-treesitter.configs").setup({
+			local configs = require("nvim-treesitter.configs")
+			configs.setup({
 				ensure_installed = {
 					"lua",
 					"vim",
@@ -54,7 +55,6 @@ return {
 					"markdown_inline",
 				},
 				sync_install = false,
-				auto_install = true,
 				highlight = { enable = true },
 				indent = { enable = true },
 			})

@@ -6,7 +6,7 @@ return {
         config = function()
             require("persistence").setup({
                 dir = vim.fn.expand(vim.fn.stdpath("state") .. "/sessions/"),
-                options = { "buffers", "curdir", "tabpages", "minsize" },
+                options = { "buffers", "curdir", "tabpages", "winsize" },
             })
 
             vim.keymap.set("n", "<leader>sl", function()
@@ -63,15 +63,15 @@ return {
             end, { desc = "Run file tests" })
 
             keymap("n", "<leader>ta", function()
-                require("neotest").run.run(vim.fn.expand("%"))
-            end, { desc = "Stop running tests" })
+                require("neotest").run.run(vim.fn.getcwd())
+            end, { desc = "Run all tests" })
 
             keymap("n", "<leader>ts", function()
                 require("neotest").summary.toggle()
             end, { desc = "Toggle test summary" })
 
             keymap("n", "<leader>to", function()
-                require("neotest").output.open({ enter = true, auto_close = true }) 
+                require("neotest").output.open({ enter = true, auto_close = true })
             end, { desc = "Show test output" })
 
             keymap("n", "<leader>tO", function()
@@ -84,6 +84,41 @@ return {
         end,
     },
 
+    -- Markdown preview
+    {
+        "iamcco/markdown-preview.nvim",
+        build = function()
+            vim.fn["mkdp#util#install"]()
+        end,
+        ft = { "markdown" },
+        config = function()
+            vim.g.mkdp_auto_start = 0
+            vim.g.mkdp_auto_close = 1
+            vim.g.mkdp_refresh_slow = 0
+            vim.g.mkdp_command_for_global = 0
+            vim.g.mkdp_open_to_the_world = 0
+            vim.g.mkdp_browser = ""
+            vim.g.mkdp_echo_preview_url = 0
+            -- vim.g.mkdp_open_to_the_vim_width_cmd = 0
+            -- vim.g.mkdp_theme = "light"
+            vim.g.mkdp_preview_options = {
+                mkit = {},
+                katex = {},
+                uml = {},
+                mermaid = {},
+                maid = {},
+                disable_sync_scroll = 0,
+                sync_scroll_type = "middle",
+                hide_yaml_meta = 1,
+                sequence_diagrams = {},
+                flowchart_diagrams = {},
+                content_editable = false,
+            }
+
+            vim.keymap.set("n", "<leader>mp", ":MarkdownPreview<CR>", { desc = "Toggle markdown preview" })
+        end,
+    },
+
     -- Color highlighting
     {
         "brenoprata10/nvim-highlight-colors",
@@ -91,7 +126,7 @@ return {
             require("nvim-highlight-colors").setup({
                 render = "background",
                 enable_named_colors = true,
-                enable_tailwind = true,
+                enable_tailwind = false,
             })
         end,
     },
@@ -109,11 +144,11 @@ return {
                     TODO = { icon = " ", color = "info" },
                     HACK = { icon = " ", color = "warning" },
                     WARN = { icon = " ", color = "warning", alt = { "WARNING", "XXX" } },
-                    PERF = { icon = " ", color = "info", alt = { "OPTIM", "OPTIMIZE", "OPTIMIZE" } },
+                    PERF = { icon = " ", alt = { "OPTIM", "PERFORMANCE", "OPTIMIZE" } },
                     NOTE = { icon = " ", color = "hint", alt = { "INFO" } },
                     TEST = { icon = " ", color = "test", alt = { "TESTING", "PASSED", "FAILED" } },
                 },
-                merged_keywords = true,
+                merge_keywords = true,
                 highlight = {
                     multiline = true,
                     multiline_pattern = "^.",
@@ -128,7 +163,7 @@ return {
                 },
                 colors = {
                     error = { "DiagnosticError", "ErrorMsg", "#DC2626"},
-                    warning = { "DiagnosticWarning", "WarningMsg", "#FBBF20" },
+                    warning = { "DiagnosticWarn", "WarningMsg", "#FBBF24" },
                     info = { "DiagnosticInfo", "#2563EB" },
                     hint = { "DiagnosticHint", "#10B981" },
                     default = { "Identifier", "#7C3AED" },
@@ -147,13 +182,13 @@ return {
                 },
             })
 
-            vim.keymap.set("n", "<leader>ft", ":TodoTelescope<CR>", { desc = "Find TODOs" })
+            vim.keymap.set("n", "<leader>ft", ":TodoTelescope<CR>", { desc = "Find todos" })
             vim.keymap.set("n", "]t", function()
                 require("todo-comments").jump_next()
-            end, { desc = "Next TODO" })    
+            end, { desc = "Next todo" })
             vim.keymap.set("n", "[t", function()
                 require("todo-comments").jump_prev()
-            end, { desc = "Previous TODO" })
+            end, { desc = "Previous todo" })
         end,
     },
 }
